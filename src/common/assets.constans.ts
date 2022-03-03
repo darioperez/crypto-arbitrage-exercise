@@ -7,6 +7,24 @@ export const CRYPTO_ASSETS: { [asset: string]: TTokenInfo } = {
   USDT: { symbol: "USDT", name: "Tether", decimals: 6 },
 };
 
+export const BINANCE_ASSET_PAIRS: TTokenPairs = {
+  DAI_BTC: {
+    POOL_ADDRESS: "",
+    TOKEN_A: CRYPTO_ASSETS.DAI,
+    TOKEN_B: CRYPTO_ASSETS.BTC,
+  },
+  DAI_ETH: {
+    POOL_ADDRESS: "",
+    TOKEN_A: CRYPTO_ASSETS.DAI,
+    TOKEN_B: CRYPTO_ASSETS.ETH,
+  },
+  DAI_USDT: {
+    POOL_ADDRESS: "",
+    TOKEN_A: CRYPTO_ASSETS.DAI,
+    TOKEN_B: CRYPTO_ASSETS.USDT,
+  },
+};
+
 export const UNISWAP_ASSET_PAIRS: TTokenPairs = {
   DAI_BTC: {
     POOL_ADDRESS: "0x391e8501b626c623d39474afca6f9e46c2686649",

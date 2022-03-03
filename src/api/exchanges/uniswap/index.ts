@@ -2,7 +2,11 @@ import { ethers } from "ethers";
 import { Pool } from "@uniswap/v3-sdk";
 import { Token } from "@uniswap/sdk-core";
 import { abi as IUniswapV3PoolABI } from "@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json";
-import type { TTokenPair, TTokenPrice } from "@/common/types";
+import type {
+  TExchangeAPIFacade,
+  TTokenPair,
+  TTokenPrice,
+} from "@/common/types";
 import { UNISWAP_ASSET_PAIRS } from "@/common/assets.constans";
 
 const provider = new ethers.providers.JsonRpcProvider(
@@ -123,7 +127,7 @@ const getTokensPrices = async (
   ];
 };
 
-export const UniswapAPI = {
+export const UniswapAPI: TExchangeAPIFacade = {
   getDAIToBTC: async () => getTokensPrices(UNISWAP_ASSET_PAIRS.DAI_BTC),
   getDAIToETH: async () => {
     const [eth, dai] = await getTokensPrices(UNISWAP_ASSET_PAIRS.ETH_DAI);

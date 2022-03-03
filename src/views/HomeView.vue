@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, type Ref } from "vue";
-import { UniswapAPI } from "@/api";
+import { UniswapAPI, BinanceAPI } from "@/api";
 import { CRYPTO_ASSETS } from "@/common/assets.constans";
 import type { TTokenInfo } from "@/common/types";
 
@@ -21,9 +21,19 @@ const quotesResults = ref([CRYPTO_ASSETS.BTC]);
 
 UniswapAPI.getDAIToBTC().then((tokens) => {
   quotesResults.value[0] = tokens[1];
+  // console.log(1, tokens[0].symbol, "=", tokens[1].price, tokens[1].symbol);
+});
+
+BinanceAPI.getDAIToBTC().then((tokens) => {
+  quotesResults.value[0] = tokens[1];
   console.log(1, tokens[0].symbol, "=", tokens[1].price, tokens[1].symbol);
 });
-UniswapAPI.getDAIToETH().then((tokens) => {
+BinanceAPI.getDAIToETH().then((tokens) => {
+  quotesResults.value[0] = tokens[1];
+  console.log(1, tokens[0].symbol, "=", tokens[1].price, tokens[1].symbol);
+});
+BinanceAPI.getDAIToUSDT().then((tokens) => {
+  quotesResults.value[0] = tokens[1];
   console.log(1, tokens[0].symbol, "=", tokens[1].price, tokens[1].symbol);
 });
 </script>

@@ -23,4 +23,14 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
+  server: {
+    proxy: {
+      "/api-binance": {
+        target:
+          "http://api.codetabs.com/v1/proxy/?quest=https://api.binance.us/api",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api-binance/, ""),
+      },
+    },
+  },
 });
