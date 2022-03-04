@@ -71,7 +71,6 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <p>{{ lastUpdatedAt }}</p>
   <el-row :gutter="24" justify="center">
     <el-input-number
       v-model="initialAmount"
@@ -119,4 +118,6 @@ onUnmounted(() => {
       </template>
     </el-table-column>
   </el-table>
+
+  <p>{{ lastUpdatedAt }}</p>
 </template>
