@@ -1,78 +1,92 @@
 <script setup lang="ts">
-import { ref, type Ref } from "vue";
-import { UniswapAPI, BinanceAPI } from "@/api";
+import { onMounted, onUnmounted, ref, type Ref } from "vue";
 import { CRYPTO_ASSETS } from "@/common/assets.constans";
-import type { TTokenInfo } from "@/common/types";
+import type { TTokenInfo, TAssetSymbols } from "@/common/types";
+import { useCryptoAssetsStore } from "@/stores/cryptoAssets";
+
+let lastUpdatedAt = ref(new Date());
+let timerRef: ReturnType<typeof setInterval>;
 
 const initialAssets: TTokenInfo[] = [CRYPTO_ASSETS.DAI];
-const initialAsset: Ref<TTokenInfo> = ref(initialAssets[0]);
+const initialAsset: Ref<string> = ref(initialAssets[0].symbol);
 
 const targetAssets: TTokenInfo[] = [];
 for (const asset in CRYPTO_ASSETS) {
-  if (CRYPTO_ASSETS[asset].symbol !== initialAsset.value.symbol) {
+  if (CRYPTO_ASSETS[asset].symbol !== initialAsset.value) {
     targetAssets.push(CRYPTO_ASSETS[asset]);
   }
 }
-const targetAsset: Ref<TTokenInfo> = ref(targetAssets[0]);
+const targetAsset: Ref<string> = ref(targetAssets[0].symbol);
 
 const initialAmount = ref(1);
 
-const quotesResults = ref([CRYPTO_ASSETS.BTC]);
+const exchanges = useCryptoAssetsStore();
 
-UniswapAPI.getDAIToBTC().then((tokens) => {
-  quotesResults.value[0] = tokens[1];
-  // console.log(1, tokens[0].symbol, "=", tokens[1].price, tokens[1].symbol);
+const quotesResults = ref(
+  exchanges.assetsQuotes[
+    (initialAsset.value + targetAsset.value) as TAssetSymbols
+  ]
+);
+
+const getQuotes = async () => {
+  quotesResults.value = await exchanges.fetchAssetQuotes(
+    (initialAsset.value + targetAsset.value) as TAssetSymbols
+  );
+};
+
+onMounted(() => {
+  getQuotes();
+  timerRef = setInterval(
+    () =>
+      getQuotes().then(() => {
+        lastUpdatedAt.value = new Date();
+      }),
+    30 * 1000
+  );
 });
 
-BinanceAPI.getDAIToBTC().then((tokens) => {
-  quotesResults.value[0] = tokens[1];
-  console.log(1, tokens[0].symbol, "=", tokens[1].price, tokens[1].symbol);
-});
-BinanceAPI.getDAIToETH().then((tokens) => {
-  quotesResults.value[0] = tokens[1];
-  console.log(1, tokens[0].symbol, "=", tokens[1].price, tokens[1].symbol);
-});
-BinanceAPI.getDAIToUSDT().then((tokens) => {
-  quotesResults.value[0] = tokens[1];
-  console.log(1, tokens[0].symbol, "=", tokens[1].price, tokens[1].symbol);
+onUnmounted(() => {
+  clearInterval(timerRef);
 });
 </script>
 
 <template>
-  <el-form :inline="true">
-    <el-row :gutter="24" justify="center">
-      <el-input-number
-        v-model="initialAmount"
-        placeholder="Initial Amount"
-        :min="0"
-        :controls="false"
-        size="large"
-      />
+  <p>{{ lastUpdatedAt }}</p>
+  <el-row :gutter="24" justify="center">
+    <el-input-number
+      v-model="initialAmount"
+      placeholder="Initial Amount"
+      :min="0"
+      :controls="false"
+      size="large"
+    />
 
-      <el-select v-model="initialAsset" placeholder="From" size="large">
-        <el-option
-          v-for="asset in initialAssets"
-          :key="asset.symbol"
-          :label="asset.symbol"
-          :value="asset.symbol"
-        ></el-option>
-      </el-select>
+    <el-select v-model="initialAsset" placeholder="From" size="large">
+      <el-option
+        v-for="asset in initialAssets"
+        :key="asset.symbol"
+        :label="asset.symbol"
+        :value="asset.symbol"
+      ></el-option>
+    </el-select>
 
-      <el-select v-model="targetAsset" placeholder="To" size="large">
-        <el-option
-          v-for="asset in targetAssets"
-          :key="asset.symbol"
-          :label="asset.symbol"
-          :value="asset.symbol"
-        ></el-option>
-      </el-select>
+    <el-select v-model="targetAsset" placeholder="To" size="large">
+      <el-option
+        v-for="asset in targetAssets"
+        :key="asset.symbol"
+        :label="asset.symbol"
+        :value="asset.symbol"
+      ></el-option>
+    </el-select>
 
-      <el-button size="large" type="primary">Get Quotes</el-button>
-    </el-row>
-  </el-form>
+    <el-button size="large" type="primary" @click="getQuotes"
+      >Get Quotes</el-button
+    >
+  </el-row>
 
   <el-table :data="quotesResults" border>
-    <el-table-column prop="symbol" label="Symbol" width="56" />
+    <el-table-column prop="exchange" label="Exchange" width="120" />
+    <el-table-column prop="symbol" label="Symbol" width="64" />
     <el-table-column prop="name" label="Name" />
     <el-table-column prop="price" label="Price" width="320" />
     <el-table-column fixed="right" width="160">

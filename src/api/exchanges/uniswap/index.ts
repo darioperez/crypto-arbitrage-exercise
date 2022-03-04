@@ -128,10 +128,10 @@ const getTokensPrices = async (
 };
 
 export const UniswapAPI: TExchangeAPIFacade = {
-  getDAIToBTC: async () => getTokensPrices(UNISWAP_ASSET_PAIRS.DAI_BTC),
-  getDAIToETH: async () => {
+  DAIBTC: async () => getTokensPrices(UNISWAP_ASSET_PAIRS.DAI_BTC),
+  DAIETH: async () => {
     const [eth, dai] = await getTokensPrices(UNISWAP_ASSET_PAIRS.ETH_DAI);
     return [dai, eth];
   },
-  getDAIToUSDT: async () => getTokensPrices(UNISWAP_ASSET_PAIRS.DAI_USDT),
+  DAIUSDT: async () => getTokensPrices(UNISWAP_ASSET_PAIRS.DAI_USDT),
 };

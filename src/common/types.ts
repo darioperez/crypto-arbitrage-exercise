@@ -1,7 +1,17 @@
+export type TAssetSymbols = "DAIUSDT" | "DAIETH" | "DAIBTC";
+export type TBinanceSymbols = "DAIUSD" | "ETHUSD" | "ETHBTC" | "ETHUSDT";
+
 export type TTokenInfo = {
   decimals: number;
   name: string;
   symbol: string;
+};
+
+export type TQuote = {
+  exchange: string;
+  name: string;
+  symbol: string;
+  price: string;
 };
 
 export type TTokenPrice = TTokenInfo & { price: string };
@@ -17,7 +27,7 @@ export type TTokenPairs = {
 };
 
 export type TExchangeAPIFacade = {
-  getDAIToBTC: () => Promise<[TTokenPrice, TTokenPrice]>;
-  getDAIToETH: () => Promise<[TTokenPrice, TTokenPrice]>;
-  getDAIToUSDT: () => Promise<[TTokenPrice, TTokenPrice]>;
+  DAIBTC: () => Promise<[TTokenPrice, TTokenPrice]>;
+  DAIETH: () => Promise<[TTokenPrice, TTokenPrice]>;
+  DAIUSDT: () => Promise<[TTokenPrice, TTokenPrice]>;
 };

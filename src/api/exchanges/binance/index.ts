@@ -1,7 +1,9 @@
 import { BINANCE_ASSET_PAIRS } from "@/common/assets.constans";
-import type { TExchangeAPIFacade, TTokenPrice } from "@/common/types";
-
-type TBinanceSymbols = "DAIUSD" | "ETHUSD" | "ETHBTC" | "ETHUSDT";
+import type {
+  TBinanceSymbols,
+  TExchangeAPIFacade,
+  TTokenPrice,
+} from "@/common/types";
 
 const BASE_URL = "/api-binance/v3/ticker/price?symbol";
 
@@ -85,7 +87,7 @@ const getDAIToUSDT = async (
 };
 
 export const BinanceAPI: TExchangeAPIFacade = {
-  getDAIToBTC: async () => getDAIToBTC(),
-  getDAIToETH: async () => getDAIToETH(),
-  getDAIToUSDT: async () => getDAIToUSDT(),
+  DAIBTC: async () => getDAIToBTC(),
+  DAIETH: async () => getDAIToETH(),
+  DAIUSDT: async () => getDAIToUSDT(),
 };
