@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { h } from "vue";
 import { onMounted, onUnmounted, ref, type Ref } from "vue";
 import { CRYPTO_ASSETS } from "@/common/assets.constans";
 import type { TTokenInfo, TAssetSymbols } from "@/common/types";
 import { useCryptoAssetsStore } from "@/stores/cryptoAssets";
+import { ElNotification } from "element-plus";
 
 let lastUpdatedAt = ref(new Date());
 let timerRef: ReturnType<typeof setInterval>;
@@ -22,6 +24,8 @@ const initialAmount = ref(1);
 
 const exchanges = useCryptoAssetsStore();
 
+let buyingAsset = ref(false);
+
 const quotesResults = ref(
   exchanges.assetsQuotes[
     (initialAsset.value + targetAsset.value) as TAssetSymbols
@@ -32,6 +36,22 @@ const getQuotes = async () => {
   quotesResults.value = await exchanges.fetchAssetQuotes(
     (initialAsset.value + targetAsset.value) as TAssetSymbols
   );
+};
+
+const showFeedback = () => {
+  buyingAsset.value = true;
+
+  setTimeout(() => {
+    buyingAsset.value = false;
+    ElNotification({
+      title: "Success",
+      message: h(
+        "i",
+        { style: "color: teal" },
+        `You have successfully bought ${initialAmount.value}${initialAsset.value} of ${targetAsset.value}`
+      ),
+    });
+  }, 1.5 * 1000);
 };
 
 onMounted(() => {
@@ -70,6 +90,8 @@ onUnmounted(() => {
       ></el-option>
     </el-select>
 
+    <span>on</span>
+
     <el-select v-model="targetAsset" placeholder="To" size="large">
       <el-option
         v-for="asset in targetAssets"
@@ -90,8 +112,10 @@ onUnmounted(() => {
     <el-table-column prop="name" label="Name" />
     <el-table-column prop="price" label="Price" width="320" />
     <el-table-column fixed="right" width="160">
-      <template #default>
-        <el-button size="small">Buy from XXXXXX</el-button>
+      <template #default="scope">
+        <el-button size="small" @click="showFeedback()" :loading="buyingAsset"
+          >Buy from {{ scope.row.exchange }}</el-button
+        >
       </template>
     </el-table-column>
   </el-table>
