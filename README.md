@@ -1,6 +1,8 @@
-# .
+# Crypto Arbitrage Exercise
 
-This template should help get you started developing with Vue 3 in Vite.
+This is an exercise of a pretty simple crypto Abritrageur (only listing, not buying ATM) as described [here](https://mint-cornet-39d.notion.site/Tropykus-Finance-Fullstack-developer-test-daf8c576cddd4ad1939ae45e8c93be27).
+
+It can list prices from Uniswap and Binance for the following pairs of assets: DAI/BTC, DAI/ETH and, DAI/USDT.
 
 ## Recommended IDE Setup
 
