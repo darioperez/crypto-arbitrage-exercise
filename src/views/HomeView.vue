@@ -2,7 +2,7 @@
 import { h } from "vue";
 import { onMounted, onUnmounted, ref, type Ref } from "vue";
 import { CRYPTO_ASSETS } from "@/common/assets.constans";
-import type { TTokenInfo, TAssetSymbols } from "@/common/types";
+import type { TTokenInfo } from "@/common/types";
 import { useCryptoAssetsStore } from "@/stores/cryptoAssets";
 import { ElNotification } from "element-plus";
 
@@ -26,16 +26,26 @@ const exchanges = useCryptoAssetsStore();
 
 let buyingAsset = ref(false);
 
-const quotesResults = ref(
-  exchanges.assetsQuotes[
-    (initialAsset.value + targetAsset.value) as TAssetSymbols
-  ]
-);
+const DAIBTCQuotes = ref(exchanges.assetsQuotes["DAIBTC"]);
+const DAIETHQuotes = ref(exchanges.assetsQuotes["DAIETH"]);
+const DAIUSDTQuotes = ref(exchanges.assetsQuotes["DAIUSDT"]);
 
 const getQuotes = async () => {
-  quotesResults.value = await exchanges.fetchAssetQuotes(
-    (initialAsset.value + targetAsset.value) as TAssetSymbols
-  );
+  DAIBTCQuotes.value = await exchanges
+    .fetchAssetQuotes("DAIBTC")
+    .then((quotes) => {
+      return quotes.sort((a, b) => (a.price <= b.price ? -1 : 1));
+    });
+  DAIETHQuotes.value = await exchanges
+    .fetchAssetQuotes("DAIETH")
+    .then((quotes) => {
+      return quotes.sort((a, b) => (a.price <= b.price ? -1 : 1));
+    });
+  DAIUSDTQuotes.value = await exchanges
+    .fetchAssetQuotes("DAIUSDT")
+    .then((quotes) => {
+      return quotes.sort((a, b) => (a.price <= b.price ? -1 : 1));
+    });
 };
 
 const showFeedback = () => {
@@ -71,53 +81,76 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <el-row :gutter="24" justify="center">
-    <el-input-number
-      v-model="initialAmount"
-      placeholder="Initial Amount"
-      :min="0"
-      :controls="false"
-      size="large"
-    />
+  <div class="arb-view--home">
+    <el-row :gutter="24">
+      <el-col :span="12">
+        <h3>DAI/BTC</h3>
+        <!-- Quotes Table: DAIBTC -->
+        <el-table :data="DAIBTCQuotes" border>
+          <el-table-column prop="exchange" label="Exchange" width="120" />
+          <el-table-column prop="price" label="Price" />
+          <el-table-column fixed="right" width="160">
+            <template #default="scope">
+              <el-button
+                size="small"
+                @click="showFeedback()"
+                :loading="buyingAsset"
+                >Buy from {{ scope.row.exchange }}</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--/ Quotes Table: DAIBTC -->
+      </el-col>
 
-    <el-select v-model="initialAsset" placeholder="From" size="large">
-      <el-option
-        v-for="asset in initialAssets"
-        :key="asset.symbol"
-        :label="asset.symbol"
-        :value="asset.symbol"
-      ></el-option>
-    </el-select>
+      <el-col :span="12">
+        <h3>DAI/ETH</h3>
+        <!-- Quotes Table: DAIETH -->
+        <el-table :data="exchanges.assetsQuotes['DAIETH']" border>
+          <el-table-column prop="exchange" label="Exchange" width="120" />
+          <el-table-column prop="price" label="Price" />
+          <el-table-column fixed="right" width="160">
+            <template #default="scope">
+              <el-button
+                size="small"
+                @click="showFeedback()"
+                :loading="buyingAsset"
+                >Buy from {{ scope.row.exchange }}</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--/ Quotes Table: DAIETH -->
+      </el-col>
 
-    <span>on</span>
+      <el-col :span="12">
+        <h3>DAI/USDT</h3>
+        <!-- Quotes Table: DAIUSDT -->
+        <el-table :data="exchanges.assetsQuotes['DAIUSDT']" border>
+          <el-table-column prop="exchange" label="Exchange" width="120" />
+          <el-table-column prop="price" label="Price" />
+          <el-table-column fixed="right" width="160">
+            <template #default="scope">
+              <el-button
+                size="small"
+                @click="showFeedback()"
+                :loading="buyingAsset"
+                >Buy from {{ scope.row.exchange }}</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+        <!--/ Quotes Table: DAIUSDT -->
+      </el-col>
+    </el-row>
 
-    <el-select v-model="targetAsset" placeholder="To" size="large">
-      <el-option
-        v-for="asset in targetAssets"
-        :key="asset.symbol"
-        :label="asset.symbol"
-        :value="asset.symbol"
-      ></el-option>
-    </el-select>
-
-    <el-button size="large" type="primary" @click="getQuotes"
-      >Get Quotes</el-button
-    >
-  </el-row>
-
-  <el-table :data="quotesResults" border>
-    <el-table-column prop="exchange" label="Exchange" width="120" />
-    <el-table-column prop="symbol" label="Symbol" width="64" />
-    <el-table-column prop="name" label="Name" />
-    <el-table-column prop="price" label="Price" width="320" />
-    <el-table-column fixed="right" width="160">
-      <template #default="scope">
-        <el-button size="small" @click="showFeedback()" :loading="buyingAsset"
-          >Buy from {{ scope.row.exchange }}</el-button
-        >
-      </template>
-    </el-table-column>
-  </el-table>
-
-  <p>{{ lastUpdatedAt }}</p>
+    <p>Last updated at {{ lastUpdatedAt }}</p>
+  </div>
 </template>
+
+<style>
+.arb-view--home {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+</style>

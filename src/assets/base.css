@@ -10,3 +10,15 @@ html, body {
   text-align: center;
   color: #2c3e50;
 }
+
+/* Utils */
+.arb-ml-auto {
+  margin-left: auto;
+}
+.arb-mr-auto {
+  margin-right: auto;
+}
+
+.arb-mr-sm {
+  margin-right: 0.5rem;
+}

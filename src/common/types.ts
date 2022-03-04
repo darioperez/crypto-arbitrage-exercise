@@ -12,6 +12,7 @@ export type TQuote = {
   name: string;
   symbol: string;
   price: string;
+  featured?: boolean;
 };
 
 export type TTokenPrice = TTokenInfo & { price: string };
